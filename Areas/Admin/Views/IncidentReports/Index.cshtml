@@ -1,0 +1,45 @@
+﻿@model IEnumerable<DisasterManagement.Models.IncidentReport>
+
+@{
+    ViewData["Title"] = "Manage Incidents";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Manage Incidents</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Reported By</th>
+                <th>Reported On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Description</td>
+                    <td>@item.Address</td>
+                    <td>@item.ReportedBy?.UserName</td>
+                    <td>@item.ReportedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <span class="badge bg-info">@item.Status</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No incidents reported yet.
+    </div>
+}

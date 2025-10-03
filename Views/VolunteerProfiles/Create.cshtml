@@ -1,0 +1,61 @@
+@model DisasterManagement.Models.VolunteerProfile
+
+@{
+    ViewData["Title"] = "Create Volunteer Profile";
+}
+
+<h1>Create Volunteer Profile</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- User selection (only if admin is assigning) -->
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label">Select User</label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-group">
+                <label asp-for="Skills" class="control-label">Skills</label>
+                <input asp-for="Skills" class="form-control" placeholder="e.g., First Aid, Cooking, Driving" />
+                <span asp-validation-for="Skills" class="text-danger"></span>
+            </div>
+
+            <!-- Availability -->
+            <div class="form-group">
+                <label asp-for="Availability" class="control-label">Availability</label>
+                <select asp-for="Availability" class="form-control">
+                    <option value="">-- Select Availability --</option>
+                    <option>Weekdays</option>
+                    <option>Weekends</option>
+                    <option>Evenings</option>
+                    <option>Anytime</option>
+                </select>
+                <span asp-validation-for="Availability" class="text-danger"></span>
+            </div>
+
+            <!-- Hours contributed (readonly at creation, can be updated later) -->
+            <div class="form-group">
+                <label asp-for="HoursContributed" class="control-label">Hours Contributed</label>
+                <input asp-for="HoursContributed" class="form-control" value="0" readonly />
+                <span asp-validation-for="HoursContributed" class="text-danger"></span>
+            </div>
+
+            <!-- Submit -->
+            <div class="form-group mt-3">
+                <input type="submit" value="Create Profile" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

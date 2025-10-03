@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+
+<!-- Hero Section -->
+<div class="hero text-center text-white" style="background: linear-gradient(to right, #1e3c72, #2a5298); padding: 100px 20px;">
+    <h1 class="display-3 fw-bold mb-4">Disaster Management & Volunteer Platform</h1>
+    <p class="lead mb-4" style="font-size: 1.3rem;">
+        Together we can respond faster, support affected communities, and make a difference.
+    </p>
+
+    <div class="d-flex justify-content-center gap-3">
+        <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-lg btn-light text-primary shadow">Login</a>
+        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-lg btn-outline-light shadow">Register</a>
+    </div>
+</div>
+
+<!-- Mission Section -->
+<section class="mission py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Our Mission</h2>
+        <p class="lead mb-5">
+            We aim to connect volunteers, donors, and authorities to respond quickly to disasters.
+            Our platform allows you to report incidents, donate essential resources, and offer your skills
+            to those in need.
+        </p>
+
+        <div class="row text-center">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm p-4 h-100">
+                    <i class="bi bi-exclamation-triangle-fill display-3 text-danger mb-3"></i>
+                    <h5>Report Incidents</h5>
+                    <p>Instantly report disasters in your area so help reaches the affected faster.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm p-4 h-100">
+                    <i class="bi bi-gift-fill display-3 text-success mb-3"></i>
+                    <h5>Donate Resources</h5>
+                    <p>Provide essential items like food, clothes, and medicine to people in need.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm p-4 h-100">
+                    <i class="bi bi-people-fill display-3 text-primary mb-3"></i>
+                    <h5>Volunteer & Support</h5>
+                    <p>Offer your skills and time to assist in disaster relief operations effectively.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta py-5 text-center text-white" style="background: linear-gradient(to right, #2a5298, #1e3c72);">
+    <div class="container">
+        <h2 class="mb-4">Ready to Make a Difference?</h2>
+        <p class="lead mb-4">Join our community of volunteers and donors today.</p>
+        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-lg btn-light text-primary shadow">Get Started</a>
+    </div>
+</section>
+
+@section Scripts {
+    <!-- Bootstrap Icons CDN for icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+}

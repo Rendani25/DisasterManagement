@@ -1,0 +1,116 @@
+﻿@model DisasterManagement.Models.IncidentReport
+
+@{
+    ViewData["Title"] = "Report New Incident";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Report New Incident
+                </h3>
+                <small>Logged in as: @User.Identity.Name</small>
+            </div>
+            <div class="card-body">
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                <form asp-action="Create" method="post" enctype="multipart/form-data" id="incidentForm">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Basic Information -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Incident Details</h5>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Incident Title *</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Detailed Description *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Type" class="form-label fw-bold">Incident Type *</label>
+                                    <select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<DisasterType>()">
+                                        <option value="">Select Type</option>
+                                    </select>
+                                    <span asp-validation-for="Type" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Status" class="form-label fw-bold">Status</label>
+                                    <select asp-for="Status" class="form-select">
+                                        <option value="Open">Open</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Resolved">Resolved</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rest of the form remains the same -->
+                    <!-- Location Information -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Location Information</h5>
+                        <div class="form-group mb-3">
+                            <label asp-for="Address" class="form-label fw-bold">Address</label>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Latitude" class="form-label fw-bold">Latitude</label>
+                                    <input asp-for="Latitude" class="form-control" type="number" step="any" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Longitude" class="form-label fw-bold">Longitude</label>
+                                    <input asp-for="Longitude" class="form-control" type="number" step="any" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Upload -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Evidence (Optional)</h5>
+                        <div class="form-group mb-3">
+                            <label asp-for="AttachmentFile" class="form-label fw-bold">Upload File</label>
+                            <input asp-for="AttachmentFile" type="file" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-user me-2"></i>
+                        <strong>Reported by:</strong> @User.Identity.Name
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">Submit Report</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,230 @@
+﻿@model DisasterManagement.Models.Donation
+
+@{
+    ViewData["Title"] = "Create Donation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-hand-holding-heart me-2"></i>Make a Donation
+                </h3>
+                <small class="text-white-50">Logged in as: @User.Identity.Name</small>
+            </div>
+            <div class="card-body">
+                <!-- Show ALL validation errors -->
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <form asp-action="Create" method="post" id="donationForm">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Donation Information -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">Donation Details</h5>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Donation Title *</label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g., Emergency Food Supplies, Medical Kits, Clothing Donation" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Description *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" 
+                                      placeholder="Describe what you're donating and any special instructions..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Donation Items -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-primary mb-0">Donation Items *</h5>
+                            <button type="button" class="btn btn-success btn-sm" onclick="addItemRow()">
+                                <i class="fas fa-plus me-1"></i>Add Item
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="itemsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="60%">Item Name *</th>
+                                        <th width="30%">Quantity</th>
+                                        <th width="10%">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsBody">
+                                    <!-- Initial row -->
+                                    <tr class="item-row">
+                                        <td>
+                                            <input type="text" name="Items[0].ItemName" class="form-control item-name" 
+                                                   placeholder="e.g., Bottled Water, Blankets, First Aid Kits" required />
+                                        </td>
+                                        <td>
+                                            <input type="number" name="Items[0].Quantity" class="form-control quantity" 
+                                                   value="1" min="1" required />
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeItemRow(this)" disabled>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted">Add at least one item to your donation.</small>
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Donor:</strong> @User.Identity.Name
+                        <br>
+                        <small>This donation will be associated with your account and will be reviewed by our team.</small>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="form-group mt-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane me-1"></i>Submit Donation
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        let itemCounter = 1;
+
+        function addItemRow() {
+            const tbody = document.getElementById('itemsBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'item-row';
+            
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" name="Items[${itemCounter}].ItemName" class="form-control item-name" 
+                           placeholder="Enter item name" required />
+                </td>
+                <td>
+                    <input type="number" name="Items[${itemCounter}].Quantity" class="form-control quantity" 
+                           value="1" min="1" required />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeItemRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            itemCounter++;
+            updateRemoveButtons();
+        }
+
+        function removeItemRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            reindexItems();
+            updateRemoveButtons();
+        }
+
+        function reindexItems() {
+            const rows = document.querySelectorAll('#itemsBody .item-row');
+            itemCounter = 0;
+            
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('.item-name');
+                const quantityInput = row.querySelector('.quantity');
+                
+                nameInput.name = `Items[${index}].ItemName`;
+                quantityInput.name = `Items[${index}].Quantity`;
+                itemCounter = index + 1;
+            });
+        }
+
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('#itemsBody .item-row');
+            const removeButtons = document.querySelectorAll('#itemsBody .btn-danger');
+            
+            // Enable/disable remove buttons based on row count
+            removeButtons.forEach(button => {
+                button.disabled = rows.length <= 1;
+            });
+        }
+
+        // Form validation
+        document.getElementById('donationForm').addEventListener('submit', function(e) {
+            const title = document.querySelector('input[name="Title"]').value.trim();
+            const description = document.querySelector('textarea[name="Description"]').value.trim();
+            const itemRows = document.querySelectorAll('#itemsBody .item-row');
+            let hasValidItems = false;
+
+            // Check if at least one item has a name
+            itemRows.forEach(row => {
+                const itemName = row.querySelector('.item-name').value.trim();
+                if (itemName) {
+                    hasValidItems = true;
+                }
+            });
+
+            if (!title) {
+                alert('Please enter a donation title.');
+                e.preventDefault();
+                return;
+            }
+
+            if (!description) {
+                alert('Please enter a donation description.');
+                e.preventDefault();
+                return;
+            }
+
+            if (!hasValidItems) {
+                alert('Please add at least one donation item with a name.');
+                e.preventDefault();
+                return;
+            }
+
+            if (!confirm('Submit this donation?')) {
+                e.preventDefault();
+            }
+        });
+
+        // Initialize remove buttons state
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRemoveButtons();
+        });
+    </script>
+
+    <style>
+        .item-name:invalid, .quantity:invalid {
+            border-color: #dc3545;
+        }
+        .item-name:valid, .quantity:valid {
+            border-color: #198754;
+        }
+    </style>
+}

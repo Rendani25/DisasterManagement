@@ -1,0 +1,71 @@
+﻿@model DisasterManagement.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Or use admin layout if you have one
+}
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="alert alert-info">
+    <strong>Admin View:</strong> You are viewing system-wide statistics
+</div>
+
+<div class="row text-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 mb-3">
+            <h5>Total Incidents (System)</h5>
+            <p class="display-6 fw-bold">@Model.TotalIncidents</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 mb-3">
+            <h5>Total Donations (System)</h5>
+            <p class="display-6 fw-bold">@Model.TotalDonations</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 mb-3">
+            <h5>Total Volunteers (System)</h5>
+            <p class="display-6 fw-bold">@Model.TotalVolunteers</p>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h4>Recent Incidents (All Users)</h4>
+<ul class="list-group mb-3">
+    @foreach (var i in Model.RecentIncidents)
+    {
+        <li class="list-group-item">
+            <strong>@i.Title</strong> — @i.ReportedOn.ToString("yyyy-MM-dd")
+        </li>
+    }
+</ul>
+
+<h4>Recent Donations (All Users)</h4>
+<ul class="list-group mb-3">
+    @foreach (var d in Model.RecentDonations)
+    {
+        <li class="list-group-item">
+            <strong>@(d.Donor?.UserName ?? "Anonymous")</strong> — @d.CreatedOn.ToString("yyyy-MM-dd")
+        </li>
+    }
+</ul>
+
+<h4>Recent Tasks (All Users)</h4>
+<ul class="list-group mb-4">
+    @foreach (var t in Model.RecentTasks)
+    {
+        <li class="list-group-item">
+            <strong>@t.Title</strong> — @t.StartTime.ToString("yyyy-MM-dd")
+        </li>
+    }
+</ul>
+
+<div class="d-flex gap-2">
+    <a href="/Admin/IncidentReports" class="btn btn-primary">Manage Incidents</a>
+    <a href="/Admin/Donations" class="btn btn-success">Manage Donations</a>
+    <a href="/Admin/Volunteers" class="btn btn-info">Manage Volunteers</a>
+</div>

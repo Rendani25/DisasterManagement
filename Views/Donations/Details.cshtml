@@ -1,0 +1,52 @@
+﻿@model IEnumerable<DisasterManagement.Models.Donation>
+
+@{
+    ViewData["Title"] = "Donations";
+}
+
+<h2>Donations</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Donation</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Donor</th>
+            <th>Date Created</th>
+            <th>Status</th>
+            <th>Items</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var donation in Model)
+        {
+            <tr>
+                <td>@donation.Donor?.UserName ?? "Anonymous"</td>
+                <td>@donation.CreatedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    @if (donation.Items != null && donation.Items.Any())
+                    {
+                        <ul>
+                            @foreach (var item in donation.Items)
+                            {
+                                <li>@item.ItemName (x@item.Quantity)</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No items</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@donation.DonationId" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@donation.DonationId" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@donation.DonationId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

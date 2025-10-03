@@ -1,0 +1,204 @@
+﻿@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var usersWithDetails = ViewBag.UsersWithDetails as List<dynamic>;
+}
+
+<h2>User Management</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Email Confirmed</th>
+                <th>Roles</th>
+                <th>Volunteer</th>
+                <th>Donor</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in usersWithDetails)
+            {
+                var user = item.User as ApplicationUser;
+                var roles = item.Roles as List<string>;
+                bool isVolunteer = item.IsVolunteer;
+                bool isDonor = item.IsDonor;
+
+                <tr>
+                    <td>
+                        <strong>@user.UserName</strong>
+                        <br>
+                        <small class="text-muted">Joined: @user.CreatedAt.ToString("MMM dd, yyyy")</small>
+                    </td>
+                    <td>@user.Email</td>
+                    <td>@(user.FullName ?? "Not set")</td>
+                    <td>
+                        @if (user.EmailConfirmed)
+                        {
+                            <span class="badge bg-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">No</span>
+                        }
+                    </td>
+                    <td>
+                        @foreach (var role in roles)
+                        {
+                            <span class="badge bg-primary me-1">@role</span>
+                        }
+                        @if (!roles.Any())
+                        {
+                            <span class="badge bg-secondary">No Roles</span>
+                        }
+                    </td>
+                    <td>
+                        @if (isVolunteer)
+                        {
+                            <span class="badge bg-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No</span>
+                        }
+                    </td>
+                    <td>
+                        @if (isDonor)
+                        {
+                            <span class="badge bg-info">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <!-- View Details -->
+                            <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-info btn-sm">
+                                Details
+                            </a>
+
+                            <!-- Edit -->
+                            <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <!-- Toggle Admin Role -->
+                            @if (roles.Contains("Admin"))
+                            {
+                                <form method="post" asp-action="ToggleRole" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <input type="hidden" name="roleName" value="Admin" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('Remove Admin role from @user.UserName?')">
+                                        Remove Admin
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-action="ToggleRole" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <input type="hidden" name="roleName" value="Admin" />
+                                    <button type="submit" class="btn btn-outline-success btn-sm"
+                                            onclick="return confirm('Make @user.UserName an Admin?')">
+                                        Make Admin
+                                    </button>
+                                </form>
+                            }
+
+                            <!-- Delete User -->
+                            @if (user.UserName != User.Identity.Name)
+                            {
+                                <form method="post" asp-action="DeleteUser" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to delete user @user.UserName? This action cannot be undone.')">
+                                        Delete
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-secondary btn-sm" disabled title="Cannot delete your own account">
+                                    Delete
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!usersWithDetails.Any())
+{
+    <div class="alert alert-info">
+        No users found in the system.
+    </div>
+}
+
+<!-- Statistics -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>User Statistics</h5>
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4>@usersWithDetails.Count</h4>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h4>@usersWithDetails.Count(u => ((List<string>)u.Roles).Contains("Admin"))</h4>
+                        <p>Admins</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h4>@usersWithDetails.Count(u => u.IsVolunteer)</h4>
+                        <p>Volunteers</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h4>@usersWithDetails.Count(u => u.IsDonor)</h4>
+                        <p>Donors</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

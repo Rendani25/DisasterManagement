@@ -1,0 +1,45 @@
+﻿@model IEnumerable<DisasterManagement.Models.Donation>
+
+@{
+    ViewData["Title"] = "Manage Donations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Manage Donations</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Donor</th>
+                <th>Item Type</th>
+                <th>DonorId</th>
+                <th>Description</th>
+                <th>Donated On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Donor?.UserName</td>
+                    <td>@item.Title</td>
+                    <td>@item.DonorId</td>
+                    <td>@item.Description</td>
+                    <td>@item.CreatedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <span class="badge bg-success">@item.Status</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No donations made yet.
+    </div>
+}
